@@ -1,0 +1,626 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Disaster Relief Coordination Platform</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://unpkg.com/feather-icons"></script>
+    <script src="https://cdn.jsdelivr.net/npm/feather-icons/dist/feather.min.js"></script>
+    <script src="https://maps.googleapis.com/maps/api/js?key=YOUR_API_KEY&libraries=places"></script>
+    <link href="https://cdn.jsdelivr.net/npm/toastify-js/src/toastify.min.css" rel="stylesheet">
+    <script src="https://cdn.jsdelivr.net/npm/toastify-js"></script>
+    <style>
+        #map {
+            height: 400px;
+            width: 100%;
+        }
+        .custom-scrollbar::-webkit-scrollbar {
+            width: 6px;
+        }
+        .custom-scrollbar::-webkit-scrollbar-track {
+            background: #f1f1f1;
+        }
+        .custom-scrollbar::-webkit-scrollbar-thumb {
+            background: #888;
+            border-radius: 3px;
+        }
+        .custom-scrollbar::-webkit-scrollbar-thumb:hover {
+            background: #555;
+        }
+    </style>
+</head>
+<body class="bg-gray-50">
+    <!-- Navigation -->
+    <nav class="bg-blue-700 text-white shadow-lg">
+        <div class="container mx-auto px-4 py-3 flex justify-between items-center">
+            <div class="flex items-center space-x-2">
+                <i data-feather="alert-triangle"></i>
+                <span class="font-bold text-xl">ReliefCoord</span>
+            </div>
+            <div class="hidden md:flex space-x-6">
+                <a href="#" class="hover:text-blue-200">Dashboard</a>
+                <a href="#volunteers" class="hover:text-blue-200">Volunteers</a>
+                <a href="#resources" class="hover:text-blue-200">Resources</a>
+                <a href="#alerts" class="hover:text-blue-200">Alerts</a>
+            </div>
+            <button id="mobile-menu-button" class="md:hidden">
+                <i data-feather="menu"></i>
+            </button>
+        </div>
+        <!-- Mobile Menu -->
+        <div id="mobile-menu" class="hidden md:hidden bg-blue-800 px-4 py-2">
+            <a href="#" class="block py-2 hover:text-blue-200">Dashboard</a>
+            <a href="#volunteers" class="block py-2 hover:text-blue-200">Volunteers</a>
+            <a href="#resources" class="block py-2 hover:text-blue-200">Resources</a>
+            <a href="#alerts" class="block py-2 hover:text-blue-200">Alerts</a>
+        </div>
+    </nav>
+
+    <!-- Main Content -->
+    <div class="container mx-auto px-4 py-8">
+        <!-- Hero Section -->
+        <section class="bg-blue-600 text-white rounded-xl p-6 mb-8 shadow-lg">
+            <div class="flex flex-col md:flex-row items-center">
+                <div class="md:w-1/2 mb-6 md:mb-0">
+                    <h1 class="text-3xl md:text-4xl font-bold mb-4">Disaster Relief Coordination Platform</h1>
+                    <p class="mb-6">Connect volunteers, track resources, and coordinate emergency response efforts in real-time.</p>
+                    <button id="register-btn" class="bg-white text-blue-600 px-6 py-2 rounded-lg font-semibold hover:bg-blue-100 transition">
+                        Register Now
+                    </button>
+                </div>
+                <div class="md:w-1/2">
+                    <div id="map" class="rounded-lg shadow-md"></div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Registration Modal -->
+        <div id="registration-modal" class="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center hidden z-50">
+            <div class="bg-white rounded-lg p-6 w-full max-w-md">
+                <div class="flex justify-between items-center mb-4">
+                    <h2 class="text-xl font-bold">Register as Volunteer/Organization</h2>
+                    <button id="close-modal" class="text-gray-500 hover:text-gray-700">
+                        <i data-feather="x"></i>
+                    </button>
+                </div>
+                <form id="registration-form" class="space-y-4">
+                    <div>
+                        <label class="block text-gray-700 mb-1">Full Name</label>
+                        <input type="text" id="name" class="w-full px-3 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500">
+                    </div>
+                    <div>
+                        <label class="block text-gray-700 mb-1">Email</label>
+                        <input type="email" id="email" class="w-full px-3 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500">
+                    </div>
+                    <div>
+                        <label class="block text-gray-700 mb-1">Phone</label>
+                        <input type="tel" id="phone" class="w-full px-3 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500">
+                    </div>
+                    <div>
+                        <label class="block text-gray-700 mb-1">Role</label>
+                        <select id="role" class="w-full px-3 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500">
+                            <option value="volunteer">Volunteer</option>
+                            <option value="medical">Medical Professional</option>
+                            <option value="supplier">Resource Supplier</option>
+                            <option value="organization">Organization</option>
+                        </select>
+                    </div>
+                    <div>
+                        <label class="block text-gray-700 mb-1">Location</label>
+                        <input type="text" id="location" class="w-full px-3 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500">
+                    </div>
+                    <div>
+                        <label class="block text-gray-700 mb-1">Skills/Resources</label>
+                        <textarea id="skills" class="w-full px-3 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"></textarea>
+                    </div>
+                    <button type="submit" class="w-full bg-blue-600 text-white py-2 rounded-lg hover:bg-blue-700 transition">
+                        Register
+                    </button>
+                </form>
+            </div>
+        </div>
+
+        <!-- Volunteers Section -->
+        <section id="volunteers" class="mb-12">
+            <h2 class="text-2xl font-bold mb-6 flex items-center">
+                <i data-feather="users" class="mr-2"></i> Volunteers & Responders
+            </h2>
+            <div class="bg-white rounded-xl shadow-md overflow-hidden">
+                <div class="p-4 bg-gray-100 border-b flex justify-between items-center">
+                    <h3 class="font-semibold">Active Volunteers</h3>
+                    <div class="relative">
+                        <input type="text" placeholder="Search volunteers..." class="pl-8 pr-4 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500">
+                        <i data-feather="search" class="absolute left-2 top-3 text-gray-400"></i>
+                    </div>
+                </div>
+                <div class="overflow-x-auto">
+                    <table class="min-w-full divide-y divide-gray-200">
+                        <thead class="bg-gray-50">
+                            <tr>
+                                <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Name</th>
+                                <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Role</th>
+                                <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Location</th>
+                                <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Status</th>
+                                <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Actions</th>
+                            </tr>
+                        </thead>
+                        <tbody id="volunteers-list" class="bg-white divide-y divide-gray-200">
+                            <!-- Volunteers will be added here dynamically -->
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </section>
+
+        <!-- Resources Section -->
+        <section id="resources" class="mb-12">
+            <h2 class="text-2xl font-bold mb-6 flex items-center">
+                <i data-feather="package" class="mr-2"></i> Emergency Resources
+            </h2>
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+                <!-- Food Supplies -->
+                <div class="bg-white rounded-xl shadow-md overflow-hidden">
+                    <div class="p-4 bg-orange-100 border-b">
+                        <h3 class="font-semibold flex items-center">
+                            <i data-feather="shopping-bag" class="mr-2"></i> Food Supplies
+                        </h3>
+                    </div>
+                    <div class="p-4">
+                        <div class="mb-4">
+                            <div class="flex justify-between mb-1">
+                                <span class="text-sm font-medium">Meal Kits</span>
+                                <span class="text-sm font-medium">125/200</span>
+                            </div>
+                            <div class="w-full bg-gray-200 rounded-full h-2.5">
+                                <div class="bg-orange-500 h-2.5 rounded-full" style="width: 62.5%"></div>
+                            </div>
+                        </div>
+                        <div class="mb-4">
+                            <div class="flex justify-between mb-1">
+                                <span class="text-sm font-medium">Water Bottles</span>
+                                <span class="text-sm font-medium">320/500</span>
+                            </div>
+                            <div class="w-full bg-gray-200 rounded-full h-2.5">
+                                <div class="bg-blue-500 h-2.5 rounded-full" style="width: 64%"></div>
+                            </div>
+                        </div>
+                        <button class="w-full mt-4 bg-orange-500 text-white py-2 rounded-lg hover:bg-orange-600 transition flex items-center justify-center">
+                            <i data-feather="plus" class="mr-2"></i> Request Supply
+                        </button>
+                    </div>
+                </div>
+
+                <!-- Medical Assistance -->
+                <div class="bg-white rounded-xl shadow-md overflow-hidden">
+                    <div class="p-4 bg-red-100 border-b">
+                        <h3 class="font-semibold flex items-center">
+                            <i data-feather="heart" class="mr-2"></i> Medical Assistance
+                        </h3>
+                    </div>
+                    <div class="p-4">
+                        <div class="mb-4">
+                            <div class="flex justify-between mb-1">
+                                <span class="text-sm font-medium">Available Doctors</span>
+                                <span class="text-sm font-medium">12</span>
+                            </div>
+                        </div>
+                        <div class="mb-4">
+                            <div class="flex justify-between mb-1">
+                                <span class="text-sm font-medium">Ambulances</span>
+                                <span class="text-sm font-medium">5/8</span>
+                            </div>
+                            <div class="w-full bg-gray-200 rounded-full h-2.5">
+                                <div class="bg-red-500 h-2.5 rounded-full" style="width: 62.5%"></div>
+                            </div>
+                        </div>
+                        <button class="w-full mt-4 bg-red-500 text-white py-2 rounded-lg hover:bg-red-600 transition flex items-center justify-center">
+                            <i data-feather="alert-circle" class="mr-2"></i> Request Medical Help
+                        </button>
+                    </div>
+                </div>
+
+                <!-- Shelter -->
+                <div class="bg-white rounded-xl shadow-md overflow-hidden">
+                    <div class="p-4 bg-green-100 border-b">
+                        <h3 class="font-semibold flex items-center">
+                            <i data-feather="home" class="mr-2"></i> Shelter & Housing
+                        </h3>
+                    </div>
+                    <div class="p-4">
+                        <div class="mb-4">
+                            <div class="flex justify-between mb-1">
+                                <span class="text-sm font-medium">Available Shelters</span>
+                                <span class="text-sm font-medium">8</span>
+                            </div>
+                        </div>
+                        <div class="mb-4">
+                            <div class="flex justify-between mb-1">
+                                <span class="text-sm font-medium">Capacity</span>
+                                <span class="text-sm font-medium">320/500</span>
+                            </div>
+                            <div class="w-full bg-gray-200 rounded-full h-2.5">
+                                <div class="bg-green-500 h-2.5 rounded-full" style="width: 64%"></div>
+                            </div>
+                        </div>
+                        <button class="w-full mt-4 bg-green-600 text-white py-2 rounded-lg hover:bg-green-700 transition flex items-center justify-center">
+                            <i data-feather="map-pin" class="mr-2"></i> Find Shelter
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Alerts Section -->
+        <section id="alerts" class="mb-12">
+            <h2 class="text-2xl font-bold mb-6 flex items-center">
+                <i data-feather="alert-octagon" class="mr-2"></i> Disaster Alerts
+            </h2>
+            <div class="bg-white rounded-xl shadow-md overflow-hidden">
+                <div class="p-4 bg-yellow-100 border-b flex justify-between items-center">
+                    <h3 class="font-semibold">Active Alerts</h3>
+                    <button id="new-alert-btn" class="bg-yellow-500 text-white px-4 py-2 rounded-lg hover:bg-yellow-600 transition flex items-center">
+                        <i data-feather="plus" class="mr-2"></i> New Alert
+                    </button>
+                </div>
+                <div class="divide-y divide-gray-200">
+                    <div class="p-4 hover:bg-gray-50 transition">
+                        <div class="flex justify-between">
+                            <div>
+                                <h4 class="font-medium">Flood Warning - River Delta Area</h4>
+                                <p class="text-sm text-gray-600">Issued: 2 hours ago | Severity: High</p>
+                            </div>
+                            <span class="bg-red-100 text-red-800 px-2 py-1 rounded-full text-xs font-semibold">Active</span>
+                        </div>
+                        <p class="mt-2 text-gray-700">Heavy rainfall expected to continue for next 24 hours. Evacuation orders for low-lying areas.</p>
+                        <div class="mt-3 flex space-x-2">
+                            <button class="text-blue-600 hover:text-blue-800 text-sm flex items-center">
+                                <i data-feather="share-2" class="w-4 h-4 mr-1"></i> Share
+                            </button>
+                            <button class="text-green-600 hover:text-green-800 text-sm flex items-center">
+                                <i data-feather="users" class="w-4 h-4 mr-1"></i> Dispatch Team
+                            </button>
+                        </div>
+                    </div>
+                    <div class="p-4 hover:bg-gray-50 transition">
+                        <div class="flex justify-between">
+                            <div>
+                                <h4 class="font-medium">Earthquake - Northern Region</h4>
+                                <p class="text-sm text-gray-600">Issued: 6 hours ago | Severity: Medium</p>
+                            </div>
+                            <span class="bg-yellow-100 text-yellow-800 px-2 py-1 rounded-full text-xs font-semibold">Monitoring</span>
+                        </div>
+                        <p class="mt-2 text-gray-700">Magnitude 5.3 earthquake reported. Damage assessment teams deployed.</p>
+                        <div class="mt-3 flex space-x-2">
+                            <button class="text-blue-600 hover:text-blue-800 text-sm flex items-center">
+                                <i data-feather="share-2" class="w-4 h-4 mr-1"></i> Share
+                            </button>
+                            <button class="text-green-600 hover:text-green-800 text-sm flex items-center">
+                                <i data-feather="users" class="w-4 h-4 mr-1"></i> Dispatch Team
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- New Alert Modal -->
+        <div id="alert-modal" class="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center hidden z-50">
+            <div class="bg-white rounded-lg p-6 w-full max-w-md">
+                <div class="flex justify-between items-center mb-4">
+                    <h2 class="text-xl font-bold">Create New Disaster Alert</h2>
+                    <button id="close-alert-modal" class="text-gray-500 hover:text-gray-700">
+                        <i data-feather="x"></i>
+                    </button>
+                </div>
+                <form id="alert-form" class="space-y-4">
+                    <div>
+                        <label class="block text-gray-700 mb-1">Alert Title</label>
+                        <input type="text" id="alert-title" class="w-full px-3 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500">
+                    </div>
+                    <div>
+                        <label class="block text-gray-700 mb-1">Disaster Type</label>
+                        <select id="disaster-type" class="w-full px-3 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500">
+                            <option value="flood">Flood</option>
+                            <option value="earthquake">Earthquake</option>
+                            <option value="hurricane">Hurricane</option>
+                            <option value="wildfire">Wildfire</option>
+                            <option value="tornado">Tornado</option>
+                            <option value="other">Other</option>
+                        </select>
+                    </div>
+                    <div>
+                        <label class="block text-gray-700 mb-1">Severity</label>
+                        <select id="severity" class="w-full px-3 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500">
+                            <option value="low">Low</option>
+                            <option value="medium">Medium</option>
+                            <option value="high">High</option>
+                            <option value="critical">Critical</option>
+                        </select>
+                    </div>
+                    <div>
+                        <label class="block text-gray-700 mb-1">Location</label>
+                        <input type="text" id="alert-location" class="w-full px-3 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500">
+                    </div>
+                    <div>
+                        <label class="block text-gray-700 mb-1">Description</label>
+                        <textarea id="alert-description" class="w-full px-3 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"></textarea>
+                    </div>
+                    <button type="submit" class="w-full bg-red-600 text-white py-2 rounded-lg hover:bg-red-700 transition">
+                        Issue Alert
+                    </button>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <!-- Footer -->
+    <footer class="bg-gray-800 text-white py-8">
+        <div class="container mx-auto px-4">
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-8">
+                <div>
+                    <h3 class="text-xl font-bold mb-4 flex items-center">
+                        <i data-feather="alert-triangle" class="mr-2"></i> ReliefCoord
+                    </h3>
+                    <p class="text-gray-400">A platform for coordinating disaster relief efforts, connecting volunteers, and managing emergency resources.</p>
+                </div>
+                <div>
+                    <h3 class="text-lg font-semibold mb-4">Quick Links</h3>
+                    <ul class="space-y-2">
+                        <li><a href="#" class="text-gray-400 hover:text-white transition">Home</a></li>
+                        <li><a href="#volunteers" class="text-gray-400 hover:text-white transition">Volunteers</a></li>
+                        <li><a href="#resources" class="text-gray-400 hover:text-white transition">Resources</a></li>
+                        <li><a href="#alerts" class="text-gray-400 hover:text-white transition">Alerts</a></li>
+                    </ul>
+                </div>
+                <div>
+                    <h3 class="text-lg font-semibold mb-4">Emergency Contacts</h3>
+                    <ul class="space-y-2 text-gray-400">
+                        <li class="flex items-center"><i data-feather="phone" class="mr-2 w-4 h-4"></i> Emergency: 911</li>
+                        <li class="flex items-center"><i data-feather="phone" class="mr-2 w-4 h-4"></i> Disaster Hotline: 1-800-123-4567</li>
+                        <li class="flex items-center"><i data-feather="mail" class="mr-2 w-4 h-4"></i> Email: help@reliefcoord.org</li>
+                    </ul>
+                </div>
+            </div>
+            <div class="border-t border-gray-700 mt-8 pt-6 text-center text-gray-400">
+                <p>&copy; 2023 ReliefCoord. All rights reserved.</p>
+            </div>
+        </div>
+    </footer>
+
+    <script>
+        // Initialize Feather Icons
+        feather.replace();
+        
+        // Mock database for demo purposes
+        const mockDatabase = {
+            volunteers: [
+                {
+                    id: 1,
+                    name: "John Doe",
+                    role: "Medical Professional",
+                    location: "Central District",
+                    status: "Available",
+                    phone: "555-123-4567",
+                    skills: "EMT, First Aid"
+                },
+                {
+                    id: 2,
+                    name: "Jane Smith",
+                    role: "Volunteer",
+                    location: "North District",
+                    status: "On Assignment",
+                    phone: "555-987-6543",
+                    skills: "Logistics, Translation"
+                },
+                {
+                    id: 3,
+                    name: "Mike Johnson",
+                    role: "Resource Supplier",
+                    location: "West District",
+                    status: "Available",
+                    phone: "555-456-7890",
+                    skills: "Food Distribution"
+                }
+            ],
+            alerts: [],
+            resources: {
+                food: {
+                    mealKits: 125,
+                    mealKitsMax: 200,
+                    waterBottles: 320,
+                    waterBottlesMax: 500
+                },
+                medical: {
+                    doctors: 12,
+                    ambulances: 5,
+                    ambulancesMax: 8
+                },
+                shelter: {
+                    shelters: 8,
+                    capacity: 320,
+                    capacityMax: 500
+                }
+            }
+        };
+
+        // Initialize Google Map
+        function initMap() {
+            const map = new google.maps.Map(document.getElementById("map"), {
+                center: { lat: -34.397, lng: 150.644 },
+                zoom: 8,
+            });
+            
+            // Add some mock markers for resources
+            new google.maps.Marker({
+                position: { lat: -34.397, lng: 150.644 },
+                map,
+                title: "Food Distribution Center",
+                icon: {
+                    url: "https://maps.google.com/mapfiles/ms/icons/green-dot.png"
+                }
+            });
+            
+            new google.maps.Marker({
+                position: { lat: -34.38, lng: 150.63 },
+                map,
+                title: "Medical Station",
+                icon: {
+                    url: "https://maps.google.com/mapfiles/ms/icons/red-dot.png"
+                }
+            });
+            
+            new google.maps.Marker({
+                position: { lat: -34.41, lng: 150.66 },
+                map,
+                title: "Shelter",
+                icon: {
+                    url: "https://maps.google.com/mapfiles/ms/icons/blue-dot.png"
+                }
+            });
+        }
+
+        // Load volunteers into the table
+        function loadVolunteers() {
+            const volunteersList = document.getElementById('volunteers-list');
+            volunteersList.innerHTML = '';
+            
+            mockDatabase.volunteers.forEach(volunteer => {
+                const row = document.createElement('tr');
+                row.innerHTML = `
+                    <td class="px-6 py-4 whitespace-nowrap">
+                        <div class="flex items-center">
+                            <div class="flex-shrink-0 h-10 w-10 bg-blue-100 rounded-full flex items-center justify-center">
+                                <i data-feather="user" class="text-blue-600"></i>
+                            </div>
+                            <div class="ml-4">
+                                <div class="text-sm font-medium text-gray-900">${volunteer.name}</div>
+                                <div class="text-sm text-gray-500">${volunteer.phone}</div>
+                            </div>
+                        </div>
+                    </td>
+                    <td class="px-6 py-4 whitespace-nowrap">
+                        <div class="text-sm text-gray-900">${volunteer.role}</div>
+                        <div class="text-sm text-gray-500">${volunteer.skills}</div>
+                    </td>
+                    <td class="px-6 py-4 whitespace-nowrap">
+                        <div class="text-sm text-gray-900">${volunteer.location}</div>
+                    </td>
+                    <td class="px-6 py-4 whitespace-nowrap">
+                        <span class="px-2 inline-flex text-xs leading-5 font-semibold rounded-full ${volunteer.status === 'Available' ? 'bg-green-100 text-green-800' : 'bg-yellow-100 text-yellow-800'}">
+                            ${volunteer.status}
+                        </span>
+                    </td>
+                    <td class="px-6 py-4 whitespace-nowrap text-sm font-medium">
+                        <button class="text-blue-600 hover:text-blue-900 mr-3">
+                            <i data-feather="phone" class="w-4 h-4"></i>
+                        </button>
+                        <button class="text-green-600 hover:text-green-900">
+                            <i data-feather="message-square" class="w-4 h-4"></i>
+                        </button>
+                    </td>
+                `;
+                volunteersList.appendChild(row);
+            });
+            feather.replace();
+        }
+
+        // Mobile menu toggle
+        document.getElementById('mobile-menu-button').addEventListener('click', function() {
+            const menu = document.getElementById('mobile-menu');
+            menu.classList.toggle('hidden');
+        });
+
+        // Registration modal
+        document.getElementById('register-btn').addEventListener('click', function() {
+            document.getElementById('registration-modal').classList.remove('hidden');
+        });
+
+        document.getElementById('close-modal').addEventListener('click', function() {
+            document.getElementById('registration-modal').classList.add('hidden');
+        });
+
+        // Alert modal
+        document.getElementById('new-alert-btn').addEventListener('click', function() {
+            document.getElementById('alert-modal').classList.remove('hidden');
+        });
+
+        document.getElementById('close-alert-modal').addEventListener('click', function() {
+            document.getElementById('alert-modal').classList.add('hidden');
+        });
+
+        // Form submission handlers
+        document.getElementById('registration-form').addEventListener('submit', function(e) {
+            e.preventDefault();
+            
+            const newVolunteer = {
+                id: mockDatabase.volunteers.length + 1,
+                name: document.getElementById('name').value,
+                role: document.getElementById('role').value,
+                location: document.getElementById('location').value,
+                status: "Available",
+                phone: document.getElementById('phone').value,
+                skills: document.getElementById('skills').value
+            };
+            
+            mockDatabase.volunteers.push(newVolunteer);
+            loadVolunteers();
+            
+            document.getElementById('registration-modal').classList.add('hidden');
+            document.getElementById('registration-form').reset();
+            
+            Toastify({
+                text: "Registration successful! Thank you for volunteering.",
+                duration: 3000,
+                close: true,
+                gravity: "top",
+                position: "right",
+                backgroundColor: "linear-gradient(to right, #00b09b, #96c93d)",
+            }).showToast();
+        });
+
+        document.getElementById('alert-form').addEventListener('submit', function(e) {
+            e.preventDefault();
+            
+            const newAlert = {
+                title: document.getElementById('alert-title').value,
+                type: document.getElementById('disaster-type').value,
+                severity: document.getElementById('severity').value,
+                location: document.getElementById('alert-location').value,
+                description: document.getElementById('alert-description').value,
+                timestamp: new Date().toLocaleString()
+            };
+            
+            mockDatabase.alerts.unshift(newAlert);
+            
+            document.getElementById('alert-modal').classList.add('hidden');
+            document.getElementById('alert-form').reset();
+            
+            Toastify({
+                text: "Alert issued successfully! Emergency teams have been notified.",
+                duration: 3000,
+                close: true,
+                gravity: "top",
+                position: "right",
+                backgroundColor: "linear-gradient(to right, #ff416c, #ff4b2b)",
+            }).showToast();
+        });
+
+        // Initialize the page
+        document.addEventListener('DOMContentLoaded', function() {
+            initMap();
+            loadVolunteers();
+        });
+    </script>
+</body>
+</html>
+
+
+Note: For a production application, you would need to:
+1. Replace "YOUR_API_KEY" with an actual Google Maps API key
+2. Implement a real backend server with a proper database (like Firebase, PostgreSQL, or MongoDB)
+3. Add user authentication
+4. Implement real-time updates using WebSockets or similar technology
+5. Add proper security measures
+
+This implementation simulates database functionality using JavaScript objects for demonstration purposes. In a real application, you would need to connect to a proper backend service.
