@@ -1,0 +1,287 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>RescueLink - Disaster Relief Coordination Platform</title>
+    <link rel="icon" type="image/x-icon" href="/static/favicon.ico">
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://unpkg.com/aos@2.3.1/dist/aos.css" rel="stylesheet">
+    <script src="https://unpkg.com/aos@2.3.1/dist/aos.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/feather-icons/dist/feather.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/animejs/lib/anime.iife.min.js"></script>
+    <script src="https://unpkg.com/feather-icons"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        body {
+            font-family: 'Poppins', sans-serif;
+        }
+        .map-container {
+            height: 400px;
+            border-radius: 1rem;
+            overflow: hidden;
+        }
+        .emergency-card {
+            transition: all 0.3s ease;
+        }
+        .emergency-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 10px 25px rgba(0, 0, 0, 0.1);
+        }
+    </style>
+</head>
+<body class="bg-gray-50">
+    <!-- Navigation -->
+    <nav class="bg-blue-600 text-white shadow-lg">
+        <div class="container mx-auto px-4 py-3 flex justify-between items-center">
+            <div class="flex items-center space-x-2">
+                <i data-feather="life-buoy" class="w-8 h-8"></i>
+                <span class="text-xl font-bold">RescueLink</span>
+            </div>
+            <div class="hidden md:flex space-x-6">
+                <a href="#" class="hover:text-blue-200 font-medium">Dashboard</a>
+                <a href="#" class="hover:text-blue-200 font-medium">Map</a>
+                <a href="#" class="hover:text-blue-200 font-medium">Resources</a>
+                <a href="#" class="hover:text-blue-200 font-medium">Volunteers</a>
+                <a href="#" class="hover:text-blue-200 font-medium">Alerts</a>
+            </div>
+            <div class="flex items-center space-x-4">
+                <button class="bg-blue-700 hover:bg-blue-800 px-4 py-2 rounded-lg font-medium flex items-center">
+                    <i data-feather="log-in" class="mr-2 w-4 h-4"></i> Login
+                </button>
+                <button class="md:hidden">
+                    <i data-feather="menu"></i>
+                </button>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Hero Section -->
+    <section class="bg-gradient-to-r from-blue-500 to-blue-700 text-white py-16">
+        <div class="container mx-auto px-4 text-center">
+            <h1 class="text-4xl md:text-5xl font-bold mb-6" data-aos="fade-up">Disaster Relief Coordination Platform</h1>
+            <p class="text-xl mb-8 max-w-3xl mx-auto" data-aos="fade-up" data-aos-delay="100">
+                Connecting volunteers, resources, and emergency services in real-time to provide efficient disaster response.
+            </p>
+            <div class="flex flex-col sm:flex-row justify-center gap-4" data-aos="fade-up" data-aos-delay="200">
+                <button class="bg-white text-blue-600 hover:bg-gray-100 px-6 py-3 rounded-lg font-bold flex items-center justify-center">
+                    <i data-feather="user-plus" class="mr-2 w-5 h-5"></i> Register as Volunteer
+                </button>
+                <button class="bg-blue-800 hover:bg-blue-900 text-white px-6 py-3 rounded-lg font-bold flex items-center justify-center">
+                    <i data-feather="alert-circle" class="mr-2 w-5 h-5"></i> Report Emergency
+                </button>
+            </div>
+        </div>
+    </section>
+
+    <!-- Features Section -->
+    <section class="py-16 bg-white">
+        <div class="container mx-auto px-4">
+            <h2 class="text-3xl font-bold text-center mb-12" data-aos="fade-up">Key Features</h2>
+            <div class="grid md:grid-cols-3 gap-8">
+                <!-- Feature 1 -->
+                <div class="bg-gray-50 p-6 rounded-xl shadow-md" data-aos="fade-up" data-aos-delay="100">
+                    <div class="bg-blue-100 w-12 h-12 rounded-full flex items-center justify-center mb-4">
+                        <i data-feather="map" class="text-blue-600 w-6 h-6"></i>
+                    </div>
+                    <h3 class="text-xl font-bold mb-2">Real-time Tracking</h3>
+                    <p class="text-gray-600">
+                        Track volunteers, emergency personnel, and resources in real-time on an interactive map.
+                    </p>
+                </div>
+                
+                <!-- Feature 2 -->
+                <div class="bg-gray-50 p-6 rounded-xl shadow-md" data-aos="fade-up" data-aos-delay="200">
+                    <div class="bg-blue-100 w-12 h-12 rounded-full flex items-center justify-center mb-4">
+                        <i data-feather="bell" class="text-blue-600 w-6 h-6"></i>
+                    </div>
+                    <h3 class="text-xl font-bold mb-2">Emergency Alerts</h3>
+                    <p class="text-gray-600">
+                        Receive instant notifications about disasters, resource needs, and volunteer requests.
+                    </p>
+                </div>
+                
+                <!-- Feature 3 -->
+                <div class="bg-gray-50 p-6 rounded-xl shadow-md" data-aos="fade-up" data-aos-delay="300">
+                    <div class="bg-blue-100 w-12 h-12 rounded-full flex items-center justify-center mb-4">
+                        <i data-feather="database" class="text-blue-600 w-6 h-6"></i>
+                    </div>
+                    <h3 class="text-xl font-bold mb-2">Resource Management</h3>
+                    <p class="text-gray-600">
+                        Coordinate food, medical supplies, ambulances, and other critical resources efficiently.
+                    </p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Map Preview -->
+    <section class="py-16 bg-gray-50">
+        <div class="container mx-auto px-4">
+            <h2 class="text-3xl font-bold text-center mb-8" data-aos="fade-up">Live Coordination Map</h2>
+            <div class="map-container bg-gray-200 shadow-lg" data-aos="fade-up">
+                <!-- Map would be integrated here (Google Maps, Mapbox, etc.) -->
+                <div class="w-full h-full flex items-center justify-center">
+                    <div class="text-center">
+                        <i data-feather="map" class="w-16 h-16 text-gray-400 mx-auto mb-4"></i>
+                        <p class="text-gray-500">Interactive map showing volunteers, resources, and disaster zones</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Emergency Alerts -->
+    <section class="py-16 bg-white">
+        <div class="container mx-auto px-4">
+            <h2 class="text-3xl font-bold text-center mb-8" data-aos="fade-up">Active Emergencies</h2>
+            <div class="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
+                <!-- Emergency 1 -->
+                <div class="emergency-card bg-red-50 border-l-4 border-red-500 p-5 rounded-lg shadow-sm" data-aos="fade-up" data-aos-delay="100">
+                    <div class="flex justify-between items-start mb-3">
+                        <h3 class="font-bold text-lg text-red-700">Flood Alert</h3>
+                        <span class="bg-red-100 text-red-800 text-xs px-2 py-1 rounded">High Priority</span>
+                    </div>
+                    <p class="text-gray-600 mb-3">Northern District experiencing severe flooding. Evacuation in progress.</p>
+                    <div class="flex justify-between text-sm text-gray-500">
+                        <span><i data-feather="map-pin" class="w-4 h-4 inline mr-1"></i> 5km from you</span>
+                        <span><i data-feather="clock" class="w-4 h-4 inline mr-1"></i> 15 min ago</span>
+                    </div>
+                </div>
+                
+                <!-- Emergency 2 -->
+                <div class="emergency-card bg-orange-50 border-l-4 border-orange-500 p-5 rounded-lg shadow-sm" data-aos="fade-up" data-aos-delay="200">
+                    <div class="flex justify-between items-start mb-3">
+                        <h3 class="font-bold text-lg text-orange-700">Medical Supplies Needed</h3>
+                        <span class="bg-orange-100 text-orange-800 text-xs px-2 py-1 rounded">Medium Priority</span>
+                    </div>
+                    <p class="text-gray-600 mb-3">Central Hospital requires additional medical supplies and volunteers.</p>
+                    <div class="flex justify-between text-sm text-gray-500">
+                        <span><i data-feather="map-pin" class="w-4 h-4 inline mr-1"></i> 8km from you</span>
+                        <span><i data-feather="clock" class="w-4 h-4 inline mr-1"></i> 45 min ago</span>
+                    </div>
+                </div>
+                
+                <!-- Emergency 3 -->
+                <div class="emergency-card bg-yellow-50 border-l-4 border-yellow-500 p-5 rounded-lg shadow-sm" data-aos="fade-up" data-aos-delay="300">
+                    <div class="flex justify-between items-start mb-3">
+                        <h3 class="font-bold text-lg text-yellow-700">Food Distribution</h3>
+                        <span class="bg-yellow-100 text-yellow-800 text-xs px-2 py-1 rounded">Ongoing</span>
+                    </div>
+                    <p class="text-gray-600 mb-3">Community center needs volunteers for food distribution to displaced families.</p>
+                    <div class="flex justify-between text-sm text-gray-500">
+                        <span><i data-feather="map-pin" class="w-4 h-4 inline mr-1"></i> 3km from you</span>
+                        <span><i data-feather="clock" class="w-4 h-4 inline mr-1"></i> 2 hours ago</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Registration CTA -->
+    <section class="py-16 bg-blue-600 text-white">
+        <div class="container mx-auto px-4 text-center">
+            <h2 class="text-3xl font-bold mb-6" data-aos="fade-up">Join Our Relief Network</h2>
+            <p class="text-xl mb-8 max-w-3xl mx-auto" data-aos="fade-up" data-aos-delay="100">
+                Whether you're a volunteer, medical professional, or resource provider, your help can make a difference.
+            </p>
+            <div class="max-w-2xl mx-auto bg-white rounded-lg shadow-xl overflow-hidden" data-aos="fade-up" data-aos-delay="200">
+                <div class="p-6">
+                    <div class="grid md:grid-cols-2 gap-4">
+                        <div>
+                            <label class="block text-gray-700 text-sm font-bold mb-2 text-left" for="name">
+                                Full Name
+                            </label>
+                            <input class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500" id="name" type="text" placeholder="Your name">
+                        </div>
+                        <div>
+                            <label class="block text-gray-700 text-sm font-bold mb-2 text-left" for="email">
+                                Email
+                            </label>
+                            <input class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500" id="email" type="email" placeholder="your@email.com">
+                        </div>
+                        <div>
+                            <label class="block text-gray-700 text-sm font-bold mb-2 text-left" for="role">
+                                Role
+                            </label>
+                            <select class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500" id="role">
+                                <option>Volunteer</option>
+                                <option>Medical Professional</option>
+                                <option>Resource Provider</option>
+                                <option>Emergency Responder</option>
+                            </select>
+                        </div>
+                        <div>
+                            <label class="block text-gray-700 text-sm font-bold mb-2 text-left" for="location">
+                                Location
+                            </label>
+                            <input class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500" id="location" type="text" placeholder="Your location">
+                        </div>
+                    </div>
+                    <div class="mt-6">
+                        <button class="w-full bg-blue-600 hover:bg-blue-700 text-white font-bold py-3 px-4 rounded-md transition duration-300">
+                            Register Now
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Footer -->
+    <footer class="bg-gray-800 text-white py-12">
+        <div class="container mx-auto px-4">
+            <div class="grid md:grid-cols-4 gap-8">
+                <div>
+                    <div class="flex items-center space-x-2 mb-4">
+                        <i data-feather="life-buoy" class="w-8 h-8 text-blue-400"></i>
+                        <span class="text-xl font-bold">RescueLink</span>
+                    </div>
+                    <p class="text-gray-400">
+                        A comprehensive platform for disaster relief coordination and emergency response.
+                    </p>
+                </div>
+                <div>
+                    <h4 class="text-lg font-semibold mb-4">Quick Links</h4>
+                    <ul class="space-y-2">
+                        <li><a href="#" class="text-gray-400 hover:text-white">Dashboard</a></li>
+                        <li><a href="#" class="text-gray-400 hover:text-white">Emergency Map</a></li>
+                        <li><a href="#" class="text-gray-400 hover:text-white">Volunteer Hub</a></li>
+                        <li><a href="#" class="text-gray-400 hover:text-white">Resource Tracker</a></li>
+                    </ul>
+                </div>
+                <div>
+                    <h4 class="text-lg font-semibold mb-4">Resources</h4>
+                    <ul class="space-y-2">
+                        <li><a href="#" class="text-gray-400 hover:text-white">Disaster Preparedness</a></li>
+                        <li><a href="#" class="text-gray-400 hover:text-white">Training Materials</a></li>
+                        <li><a href="#" class="text-gray-400 hover:text-white">Emergency Contacts</a></li>
+                        <li><a href="#" class="text-gray-400 hover:text-white">FAQ</a></li>
+                    </ul>
+                </div>
+                <div>
+                    <h4 class="text-lg font-semibold mb-4">Contact</h4>
+                    <ul class="space-y-2">
+                        <li class="flex items-center text-gray-400"><i data-feather="mail" class="w-4 h-4 mr-2"></i> contact@rescue-link.org</li>
+                        <li class="flex items-center text-gray-400"><i data-feather="phone" class="w-4 h-4 mr-2"></i> +1 (555) 123-4567</li>
+                        <li class="flex items-center text-gray-400"><i data-feather="map-pin" class="w-4 h-4 mr-2"></i> Global Relief Network</li>
+                    </ul>
+                    <div class="flex space-x-4 mt-4">
+                        <a href="#" class="text-gray-400 hover:text-white"><i data-feather="facebook"></i></a>
+                        <a href="#" class="text-gray-400 hover:text-white"><i data-feather="twitter"></i></a>
+                        <a href="#" class="text-gray-400 hover:text-white"><i data-feather="instagram"></i></a>
+                        <a href="#" class="text-gray-400 hover:text-white"><i data-feather="linkedin"></i></a>
+                    </div>
+                </div>
+            </div>
+            <div class="border-t border-gray-700 mt-8 pt-8 text-center text-gray-400">
+                <p>© 2023 RescueLink. All rights reserved.</p>
+            </div>
+        </div>
+    </footer>
+
+    <script>AOS.init();</script>
+    <script>const { animate } = anime;</script>
+    <script>feather.replace();</script>
+</body>
+</html>
